@@ -2,20 +2,20 @@ import discord
 from discord.ext import commands
 import random
 import re
+import os
 
 # ─────────────────────────────────────────────
 #  Configuration
 # ─────────────────────────────────────────────
-import os
 TOKEN = os.environ["DISCORD_TOKEN"]
 
 intents = discord.Intents.default()
-intents.message_content = True          # obligatoire pour lire les messages
+intents.message_content = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # ─────────────────────────────────────────────
-#  Liste de sourates (numéro, nom arabe, nom français, versets)
+#  Sourates
 # ─────────────────────────────────────────────
 SOURATES = [
     {
@@ -166,7 +166,7 @@ SOURATES = [
     {
         "numero": 2,
         "nom_ar": "البقرة",
-        "nom_fr": "Al-Baqara (La Vache) — Ayat Al-Kursi",
+        "nom_fr": "Al-Baqara — Ayat Al-Kursi (2:255)",
         "texte": (
             "﴿آيَةُ الْكُرْسِيِّ﴾\n"
             "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ\n"
@@ -179,32 +179,195 @@ SOURATES = [
             "وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ"
         ),
         "traduction": (
-            "Verset du Trône (2:255)\n"
+            "Verset du Trône\n"
             "Allah ! Point de divinité à part Lui, le Vivant, Celui qui subsiste par lui-même.\n"
             "Ni somnolence ni sommeil ne Le saisissent.\n"
             "À Lui appartient tout ce qui est dans les cieux et sur la terre.\n"
             "Qui peut intercéder auprès de Lui sans Sa permission ?\n"
             "Il sait ce qui est devant eux et ce qui est derrière eux.\n"
-            "Alors qu'ils n'embrassent de Sa science que ce qu'Il veut.\n"
             "Son Trône est plus vaste que les cieux et la terre, dont la garde ne Lui coûte aucune peine.\n"
             "Et Il est le Très Haut, le Très Grand."
         ),
     },
+    {
+        "numero": 18,
+        "nom_ar": "الكهف",
+        "nom_fr": "Al-Kahf (La Caverne) — début",
+        "texte": (
+            "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\n"
+            "الْحَمْدُ لِلَّهِ الَّذِي أَنزَلَ عَلَىٰ عَبْدِهِ الْكِتَابَ وَلَمْ يَجْعَل لَّهُ عِوَجًا\n"
+            "قَيِّمًا لِّيُنذِرَ بَأْسًا شَدِيدًا مِّن لَّدُنْهُ وَيُبَشِّرَ الْمُؤْمِنِينَ الَّذِينَ يَعْمَلُونَ الصَّالِحَاتِ أَنَّ لَهُمْ أَجْرًا حَسَنًا\n"
+            "مَّاكِثِينَ فِيهِ أَبَدًا"
+        ),
+        "traduction": (
+            "Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux.\n"
+            "Louange à Allah qui a fait descendre sur Son serviteur le Livre, sans y mettre d'ambiguïté,\n"
+            "[un Livre] droit, pour avertir d'un châtiment sévère de Sa part, et annoncer aux croyants qui font de bonnes œuvres qu'ils auront une belle récompense,\n"
+            "où ils demeureront éternellement."
+        ),
+    },
+    {
+        "numero": 56,
+        "nom_ar": "الواقعة",
+        "nom_fr": "Al-Waqi'a (L'Événement)",
+        "texte": (
+            "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\n"
+            "إِذَا وَقَعَتِ الْوَاقِعَةُ\n"
+            "لَيْسَ لِوَقْعَتِهَا كَاذِبَةٌ\n"
+            "خَافِضَةٌ رَّافِعَةٌ\n"
+            "إِذَا رُجَّتِ الْأَرْضُ رَجًّا\n"
+            "وَبُسَّتِ الْجِبَالُ بَسًّا\n"
+            "فَكَانَتْ هَبَاءً مُّنبَثًّا"
+        ),
+        "traduction": (
+            "Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux.\n"
+            "Quand l'Événement arrivera,\n"
+            "nul ne pourra nier son avènement,\n"
+            "abaissant [les uns], élevant [les autres].\n"
+            "Quand la terre sera secouée d'un violent séisme,\n"
+            "et que les montagnes seront réduites en poussière,\n"
+            "et deviendront une poussière dispersée."
+        ),
+    },
+    {
+        "numero": 73,
+        "nom_ar": "المزمل",
+        "nom_fr": "Al-Muzzammil (L'Enveloppé)",
+        "texte": (
+            "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\n"
+            "يَا أَيُّهَا الْمُزَّمِّلُ\n"
+            "قُمِ اللَّيْلَ إِلَّا قَلِيلًا\n"
+            "نِّصْفَهُ أَوِ انقُصْ مِنْهُ قَلِيلًا\n"
+            "أَوْ زِدْ عَلَيْهِ وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا\n"
+            "إِنَّا سَنُلْقِي عَلَيْكَ قَوْلًا ثَقِيلًا"
+        ),
+        "traduction": (
+            "Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux.\n"
+            "Ô toi l'enveloppé [dans tes vêtements] !\n"
+            "Lève-toi [pour prier] la nuit, sauf une petite partie,\n"
+            "la moitié, ou un peu moins,\n"
+            "ou un peu plus. Et récite le Coran lentement et distinctement.\n"
+            "Car Nous allons te révéler des paroles de grand poids."
+        ),
+    },
+    {
+        "numero": 74,
+        "nom_ar": "المدثر",
+        "nom_fr": "Al-Muddaththir (Le Revêtu d'un manteau)",
+        "texte": (
+            "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\n"
+            "يَا أَيُّهَا الْمُدَّثِّرُ\n"
+            "قُمْ فَأَنذِرْ\n"
+            "وَرَبَّكَ فَكَبِّرْ\n"
+            "وَثِيَابَكَ فَطَهِّرْ\n"
+            "وَالرُّجْزَ فَاهْجُرْ"
+        ),
+        "traduction": (
+            "Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux.\n"
+            "Ô toi le revêtu d'un manteau !\n"
+            "Lève-toi et avertis.\n"
+            "Et ton Seigneur, magnifie-Le.\n"
+            "Et tes vêtements, purifie-les.\n"
+            "Et les souillures, éloigne-toi en."
+        ),
+    },
+    {
+        "numero": 93,
+        "nom_ar": "الضحى",
+        "nom_fr": "Ad-Duha (La Matinée)",
+        "texte": (
+            "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\n"
+            "وَالضُّحَىٰ\n"
+            "وَاللَّيْلِ إِذَا سَجَىٰ\n"
+            "مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَىٰ\n"
+            "وَلَلْآخِرَةُ خَيْرٌ لَّكَ مِنَ الْأُولَىٰ\n"
+            "وَلَسَوْفَ يُعْطِيكَ رَبُّكَ فَتَرْضَىٰ"
+        ),
+        "traduction": (
+            "Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux.\n"
+            "Par la matinée,\n"
+            "et par la nuit quand elle étend son calme !\n"
+            "Ton Seigneur ne t'a pas abandonné, et Il ne t'a pas oublié.\n"
+            "Et certes, la vie future sera meilleure pour toi que la première.\n"
+            "Et certes, ton Seigneur te donnera, et tu seras satisfait."
+        ),
+    },
+    {
+        "numero": 94,
+        "nom_ar": "الشرح",
+        "nom_fr": "Ash-Sharh (L'Expansion)",
+        "texte": (
+            "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\n"
+            "أَلَمْ نَشْرَحْ لَكَ صَدْرَكَ\n"
+            "وَوَضَعْنَا عَنكَ وِزْرَكَ\n"
+            "الَّذِي أَنقَضَ ظَهْرَكَ\n"
+            "وَرَفَعْنَا لَكَ ذِكْرَكَ\n"
+            "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا\n"
+            "إِنَّ مَعَ الْعُسْرِ يُسْرًا\n"
+            "فَإِذَا فَرَغْتَ فَانصَبْ\n"
+            "وَإِلَىٰ رَبِّكَ فَارْغَب"
+        ),
+        "traduction": (
+            "Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux.\n"
+            "N'avons-Nous pas déployé ta poitrine,\n"
+            "et déposé de toi ton fardeau\n"
+            "qui accablait ton dos ?\n"
+            "Et hissé haut ta renommée ?\n"
+            "Certes, avec la difficulté vient la facilité.\n"
+            "Certes, avec la difficulté vient la facilité.\n"
+            "Alors, quand tu te libères [de tes occupations], affaire-toi [à la prière],\n"
+            "et aspire ardemment à ton Seigneur."
+        ),
+    },
+    {
+        "numero": 108,
+        "nom_ar": "الكوثر",
+        "nom_fr": "Al-Kawthar (L'Abondance)",
+        "texte": (
+            "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\n"
+            "إِنَّا أَعْطَيْنَاكَ الْكَوْثَرَ\n"
+            "فَصَلِّ لِرَبِّكَ وَانْحَرْ\n"
+            "إِنَّ شَانِئَكَ هُوَ الْأَبْتَرُ"
+        ),
+        "traduction": (
+            "Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux.\n"
+            "Nous t'avons certes donné l'Abondance.\n"
+            "Accomplis donc la Salât pour ton Seigneur et sacrifie.\n"
+            "C'est bien ton ennemi qui est sans postérité."
+        ),
+    },
 ]
 
-# Mots-clés qui déclenchent l'envoi d'une sourate
+# ─────────────────────────────────────────────
+#  Détection — toutes les combinaisons possibles
+# ─────────────────────────────────────────────
 MOTS_CLES = re.compile(
-    r"\b(w[\'']?allah|wallah|wallahi|w\'?llah|jure\s+sur\s+allah|je\s+jure\s+sur\s+allah|والله)\b",
-    re.IGNORECASE | re.UNICODE,
+    r"""
+    (?:
+        # Variantes latines : wallah, wallahi, w'allah, w'llah, wAllah, WALLAH...
+        [Ww][Aa][Ll]{1,2}[Aa][Hh][Ii]?           |   # wallah / wallahi
+        [Ww][''\u2019\u02bc]?[Aa][Ll]{1,2}[Aa][Hh][Ii]?  |   # w'allah / w'llah
+        [Ww][Aa][Ll]{1,2}[Aa][Hh][Ii]?           |   # wallah sans apostrophe
+        # "jure sur allah" / "je jure sur allah" / "jure par allah"
+        (?:je\s+)?jure\s+(?:sur|par)\s+[Aa]ll[aâ]h  |
+        # Mix latin+arabe : w'الله / W'الله / wالله / wallالله
+        [Ww][''\u2019\u02bc]?\s*\u0627\u0644\u0644\u0647  |   # w'الله
+        [Ww][Aa][Ll]?\s*\u0627\u0644\u0644\u0647  |   # walالله
+        # Arabe pur : والله
+        \u0648\u0627\u0644\u0644\u0647              |   # والله
+        # وَاللَّهِ avec diacritiques
+        \u0648\u064e\u0627\u0644\u0644\u0651\u064e\u0647\u0650
+    )
+    """,
+    re.VERBOSE | re.UNICODE,
 )
 
 
 def build_embed(sourate: dict) -> discord.Embed:
-    """Construit un embed Discord pour une sourate."""
     embed = discord.Embed(
         title=f"📖 Sourate {sourate['numero']} — {sourate['nom_ar']}",
         description=f"**{sourate['nom_fr']}**",
-        color=0x1a6b3c,   # vert islamique
+        color=0x1a6b3c,
     )
     embed.add_field(name="🕌 Texte arabe", value=sourate["texte"], inline=False)
     embed.add_field(name="🇫🇷 Traduction", value=sourate["traduction"], inline=False)
@@ -223,11 +386,9 @@ async def on_ready():
 
 @bot.event
 async def on_message(message: discord.Message):
-    # Ne pas répondre à lui-même
     if message.author.bot:
         return
 
-    # Détection des mots-clés
     if MOTS_CLES.search(message.content):
         sourate = random.choice(SOURATES)
         await message.channel.send(
@@ -235,7 +396,6 @@ async def on_message(message: discord.Message):
             embed=build_embed(sourate),
         )
 
-    # Traiter les commandes (obligatoire si on utilise on_message)
     await bot.process_commands(message)
 
 
@@ -244,7 +404,6 @@ async def on_message(message: discord.Message):
 # ─────────────────────────────────────────────
 @bot.command(name="sourate")
 async def sourate_cmd(ctx: commands.Context):
-    """Envoie une sourate aléatoire du Coran."""
     sourate = random.choice(SOURATES)
     await ctx.send(
         f"📖 Voici une sourate pour toi, {ctx.author.mention} :",
@@ -254,7 +413,6 @@ async def sourate_cmd(ctx: commands.Context):
 
 @bot.command(name="liste")
 async def liste_cmd(ctx: commands.Context):
-    """Affiche la liste des sourates disponibles."""
     lignes = [f"**{s['numero']}** — {s['nom_ar']} ({s['nom_fr']})" for s in SOURATES]
     embed = discord.Embed(
         title="📚 Sourates disponibles",
