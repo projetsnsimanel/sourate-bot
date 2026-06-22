@@ -6,7 +6,8 @@ import re
 # ─────────────────────────────────────────────
 #  Configuration
 # ─────────────────────────────────────────────
-TOKEN = "MTUxODU3MzAyOTI3NjM4NTQzMA.GNY-x1.9HkyX8k7CDhiP71kGhIveJcLZH76eIjd-0guD8"   # <-- remplace par ton token
+import os
+TOKEN = os.environ["MTUxODU3MzAyOTI3NjM4NTQzMA.GKiLMv.v3UMhtsZquF7ooZeIbiIXbHHXGY0Oy4Jra_fCQ"]
 
 intents = discord.Intents.default()
 intents.message_content = True          # obligatoire pour lire les messages
@@ -267,3 +268,4 @@ async def liste_cmd(ctx: commands.Context):
 #  Lancement
 # ─────────────────────────────────────────────
 bot.run(TOKEN)
+
