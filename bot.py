@@ -7,7 +7,7 @@ import re
 #  Configuration
 # ─────────────────────────────────────────────
 import os
-TOKEN = os.environ["MTUxODU3MzAyOTI3NjM4NTQzMA.GKiLMv.v3UMhtsZquF7ooZeIbiIXbHHXGY0Oy4Jra_fCQ"]
+TOKEN = os.environ["DISCORD_TOKEN"]
 
 intents = discord.Intents.default()
 intents.message_content = True          # obligatoire pour lire les messages
